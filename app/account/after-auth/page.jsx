@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function AfterAuthRedirect() {
   const [nonAdminBanner, setNonAdminBanner] = useState(false);
@@ -15,12 +16,7 @@ export default function AfterAuthRedirect() {
         );
         const cb = params.get('callbackUrl');
 
-        const res = await fetch('/api/admin/allowlist?me=1');
-        if (!res.ok) {
-          if (!cancelled) window.location.replace('/');
-          return;
-        }
-        const me = await res.json();
+        const me = await mockApi.getAdminAllowlist();
         const isAdmin = !!me?.isAdmin;
 
         if (isAdmin) {

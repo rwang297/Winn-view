@@ -4,6 +4,7 @@ import Footer from '@/components/winview/Footer';
 import Header from '@/components/winview/Header';
 import { Check, Phone } from 'lucide-react';
 import { useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function ComplaintsPage() {
   const [formData, setFormData] = useState({
@@ -30,18 +31,7 @@ export default function ComplaintsPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/complaints', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit complaint');
-      }
-
+      await mockApi.createComplaint(formData);
       setIsSuccess(true);
       setFormData({
         name: '',

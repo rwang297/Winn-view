@@ -4,6 +4,7 @@ import useUser from '@/utils/useUser';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -15,9 +16,7 @@ export default function Header() {
     queryKey: ['header-admin-me'],
     enabled: !!user,
     queryFn: async () => {
-      const res = await fetch('/api/admin/allowlist?me=1');
-      if (!res.ok) return { isAdmin: false };
-      return res.json();
+      return mockApi.getAdminAllowlist(user?.id);
     },
   });
 
