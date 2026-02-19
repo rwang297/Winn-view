@@ -266,7 +266,7 @@ export function useOpenAccountForm(config = {}) {
 
     try {
       if (flow === 'simple') {
-        // SIMPLE FLOW: Only create account from formData
+        // SIMPLE FLOW: Store form data locally (no backend)
         const payload = {
           fullName: formData.fullName,
           email: formData.email,
@@ -275,26 +275,16 @@ export function useOpenAccountForm(config = {}) {
           gender: formData.gender,
           occupation: formData.occupation,
           address: formData.address,
-          // pass new fields
           idCardType: formData.idCardType || null,
           accountNumber: formData.accountNumber || null,
         };
-
-        const res = await fetch('/api/accounts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) {
-          throw new Error(
-            `When creating account, the response was [${res.status}] ${res.statusText}`
-          );
-        }
+        // Store in localStorage
+        localStorage.setItem('accountData', JSON.stringify(payload));
         setIsSuccess(true);
         return;
       }
 
-      // FULL FLOW: Build account payload with smart fallbacks so the flow can start at IPPIS/B without earlier steps
+      // FULL FLOW: Build account payload with smart fallbacks
       const derivedFullName =
         formData.fullName ||
         [bForm.firstName, bForm.otherNames, bForm.surname].filter(Boolean).join(' ') ||
@@ -334,7 +324,6 @@ export function useOpenAccountForm(config = {}) {
             '\n- '
           )}\n\nTip: You can fill them in the IPPIS sections.`
         );
-        // Nudge back to the first step (IPPIS) to fill details
         setCurrentStep(1);
         return;
       }
@@ -382,99 +371,25 @@ export function useOpenAccountForm(config = {}) {
         return;
       }
 
-      const accountPayload = {
-        fullName: derivedFullName,
-        email: derivedEmail,
-        phone: derivedPhone,
-        age: derivedAge,
-        gender: derivedGender,
-        occupation: derivedOccupation,
-        address: derivedAddress,
-        // Include new fields if provided
-        idCardType: formData.idCardType || null,
-        accountNumber: formData.accountNumber || null,
+      // Store all form data locally
+      const allData = {
+        account: {
+          fullName: derivedFullName,
+          email: derivedEmail,
+          phone: derivedPhone,
+          age: derivedAge,
+          gender: derivedGender,
+          occupation: derivedOccupation,
+          address: derivedAddress,
+          idCardType: formData.idCardType || null,
+          accountNumber: formData.accountNumber || null,
+        },
+        ippis: ippisForm,
+        sectionB: bForm,
+        sectionC: cForm,
+        sectionD: dForm,
       };
-
-      // 1) Create account
-      const accountRes = await fetch('/api/accounts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(accountPayload),
-      });
-      if (!accountRes.ok) {
-        throw new Error(
-          `When creating account, the response was [${accountRes.status}] ${accountRes.statusText}`
-        );
-      }
-      const accountJson = await accountRes.json();
-
-      // 2) Save IPPIS application (wire to DB)
-      const ippisPayload = {
-        ...ippisForm,
-        // fallback personal email to main email if not provided
-        personalEmail: ippisForm.personalEmail || derivedEmail,
-        // link to created account
-        accountId: accountJson.accountId,
-      };
-      const ippisRes = await fetch('/api/ippis-applications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ippisPayload),
-      });
-      if (!ippisRes.ok) {
-        throw new Error(
-          `When saving IPPIS application, the response was [${ippisRes.status}] ${ippisRes.statusText}`
-        );
-      }
-
-      // 3) Save Section B (Account Opening)
-      const bPayload = {
-        ...bForm,
-        accountId: accountJson.accountId,
-      };
-      const bRes = await fetch('/api/account-opening-b', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bPayload),
-      });
-      if (!bRes.ok) {
-        throw new Error(
-          `When saving Section B, the response was [${bRes.status}] ${bRes.statusText}`
-        );
-      }
-
-      // 4) Save Section C (Account Mandate & Docs & Terms)
-      const cPayload = {
-        ...cForm,
-        accountId: accountJson.accountId,
-      };
-      const cRes = await fetch('/api/account-mandate-c', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cPayload),
-      });
-      if (!cRes.ok) {
-        throw new Error(
-          `When saving Section C, the response was [${cRes.status}] ${cRes.statusText}`
-        );
-      }
-
-      // 5) Save Section D (Reference Forms)
-      const dPayload = {
-        ...dForm,
-        accountId: accountJson.accountId,
-      };
-      const dRes = await fetch('/api/reference-forms-d', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dPayload),
-      });
-      if (!dRes.ok) {
-        throw new Error(
-          `When saving Section D, the response was [${dRes.status}] ${dRes.statusText}`
-        );
-      }
-
+      localStorage.setItem('applicationData', JSON.stringify(allData));
       setIsSuccess(true);
     } catch (error) {
       console.error(error);

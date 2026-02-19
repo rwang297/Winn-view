@@ -8,37 +8,11 @@ export default function AfterAuthRedirect() {
   useEffect(() => {
     let cancelled = false;
 
-    const run = async () => {
-      try {
-        const params = new URLSearchParams(
-          typeof window !== 'undefined' ? window.location.search : ''
-        );
-        const cb = params.get('callbackUrl');
+    // No backend integration - redirect to home
+    setTimeout(() => {
+      if (!cancelled) window.location.replace('/');
+    }, 1500);
 
-        const res = await fetch('/api/admin/allowlist?me=1');
-        if (!res.ok) {
-          if (!cancelled) window.location.replace('/');
-          return;
-        }
-        const me = await res.json();
-        const isAdmin = !!me?.isAdmin;
-
-        if (isAdmin) {
-          const target = cb && cb.startsWith('/admin') ? cb : '/admin/dashboard';
-          if (!cancelled) window.location.replace(target);
-        } else {
-          if (!cancelled) setNonAdminBanner(true);
-          setTimeout(() => {
-            if (!cancelled) window.location.replace('/');
-          }, 1500);
-        }
-      } catch (e) {
-        console.error('AfterAuth redirect failed', e);
-        if (!cancelled) window.location.replace('/');
-      }
-    };
-
-    run();
     return () => {
       cancelled = true;
     };

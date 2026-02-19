@@ -30,17 +30,13 @@ export default function ComplaintsPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/complaints', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      // Store complaint locally (no backend integration)
+      const complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
+      complaints.push({
+        ...formData,
+        timestamp: new Date().toISOString(),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit complaint');
-      }
+      localStorage.setItem('complaints', JSON.stringify(complaints));
 
       setIsSuccess(true);
       setFormData({

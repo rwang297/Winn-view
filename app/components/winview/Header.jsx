@@ -1,7 +1,6 @@
 'use client';
 
 import useUser from '@/utils/useUser';
-import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -11,17 +10,8 @@ export default function Header() {
   const [supportOpen, setSupportOpen] = useState(false);
 
   const { data: user } = useUser();
-  const { data: me } = useQuery({
-    queryKey: ['header-admin-me'],
-    enabled: !!user,
-    queryFn: async () => {
-      const res = await fetch('/api/admin/allowlist?me=1');
-      if (!res.ok) return { isAdmin: false };
-      return res.json();
-    },
-  });
-
-  const isAdmin = !!me?.isAdmin;
+  // No backend integration - admin feature disabled
+  const isAdmin = false;
 
   const iosText =
     '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif';
