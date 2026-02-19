@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import mockApi from '@/utils/mockApi';
 
 export function useAdminAllowlist(user, isAdmin) {
   const queryClient = useQueryClient();
@@ -11,26 +12,14 @@ export function useAdminAllowlist(user, isAdmin) {
     queryKey: ['admin-allowlist'],
     enabled: !!user && isAdmin,
     queryFn: async () => {
-      const res = await fetch('/api/admin/allowlist');
-      if (!res.ok) {
-        throw new Error(`Failed to load allowlist: [${res.status}] ${res.statusText}`);
-      }
-      return res.json();
+      return mockApi.getAdminAllowlist();
     },
   });
 
   const addAdmin = useMutation({
     mutationFn: async (email) => {
-      const res = await fetch('/api/admin/allowlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j?.error || `Failed to add admin`);
-      }
-      return res.json();
+      // Extract userId from email for mock (in real app, backend would handle this)
+      return mockApi.addToAdminAllowlist(email);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-allowlist'] });
@@ -39,14 +28,7 @@ export function useAdminAllowlist(user, isAdmin) {
 
   const removeAdmin = useMutation({
     mutationFn: async (email) => {
-      const res = await fetch(`/api/admin/allowlist?email=${encodeURIComponent(email)}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j?.error || `Failed to remove admin`);
-      }
-      return res.json();
+      return mockApi.removeFromAdminAllowlist(email);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-allowlist'] });

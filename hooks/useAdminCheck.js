@@ -1,16 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+import mockApi from '@/utils/mockApi';
 
 export function useAdminCheck(user) {
   const { data: me, isLoading: meLoading } = useQuery({
     queryKey: ['admin-me'],
     enabled: !!user,
     queryFn: async () => {
-      const res = await fetch('/api/admin/allowlist?me=1');
-      if (!res.ok) {
-        if (res.status === 401) return { isAdmin: false };
-        throw new Error(`Failed admin check: [${res.status}] ${res.statusText}`);
-      }
-      return res.json();
+      return mockApi.getAdminAllowlist(user?.id);
     },
   });
 

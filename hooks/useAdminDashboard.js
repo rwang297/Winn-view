@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export function useAdminDashboard(user, isAdmin) {
   const [metrics, setMetrics] = useState(null);
@@ -12,17 +13,10 @@ export function useAdminDashboard(user, isAdmin) {
 
   const fetchDashboardData = async () => {
     try {
-      const [metricsRes, trendsRes] = await Promise.all([
-        fetch('/api/admin/metrics'),
-        fetch('/api/admin/trends'),
+      const [metricsData, trendsData] = await Promise.all([
+        mockApi.getAdminMetrics(),
+        mockApi.getAdminTrends(),
       ]);
-
-      if (!metricsRes.ok || !trendsRes.ok) {
-        throw new Error('Failed to fetch dashboard data');
-      }
-
-      const metricsData = await metricsRes.json();
-      const trendsData = await trendsRes.json();
 
       setMetrics(metricsData);
       setTrends(trendsData.trends);
