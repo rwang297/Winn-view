@@ -21,7 +21,6 @@ export function useLatestAccounts(user, isAdmin) {
   });
 }
 
-// ADD: latest complaints hook mirroring the pattern above
 export function useLatestComplaints(user, isAdmin) {
   return useQuery({
     queryKey: ['latest-complaints'],

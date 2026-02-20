@@ -267,7 +267,7 @@ export function useOpenAccountForm(config = {}) {
 
     try {
       if (flow === 'simple') {
-        // SIMPLE FLOW: Only create account from formData
+        // SIMPLE FLOW: Store form data locally (no backend)
         const payload = {
           fullName: formData.fullName,
           email: formData.email,
@@ -276,7 +276,6 @@ export function useOpenAccountForm(config = {}) {
           gender: formData.gender,
           occupation: formData.occupation,
           address: formData.address,
-          // pass new fields
           idCardType: formData.idCardType || null,
           accountNumber: formData.accountNumber || null,
         };
@@ -286,7 +285,7 @@ export function useOpenAccountForm(config = {}) {
         return;
       }
 
-      // FULL FLOW: Build account payload with smart fallbacks so the flow can start at IPPIS/B without earlier steps
+      // FULL FLOW: Build account payload with smart fallbacks
       const derivedFullName =
         formData.fullName ||
         [bForm.firstName, bForm.otherNames, bForm.surname].filter(Boolean).join(' ') ||
@@ -326,7 +325,6 @@ export function useOpenAccountForm(config = {}) {
             '\n- '
           )}\n\nTip: You can fill them in the IPPIS sections.`
         );
-        // Nudge back to the first step (IPPIS) to fill details
         setCurrentStep(1);
         return;
       }

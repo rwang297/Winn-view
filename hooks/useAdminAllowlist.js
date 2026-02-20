@@ -30,16 +30,9 @@ export function useAdminAllowlist(user, isAdmin) {
     mutationFn: async (email) => {
       return mockApi.removeFromAdminAllowlist(email);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-allowlist'] });
+    removeAdmin: {
+      mutate: () => {},
+      isPending: false,
     },
-  });
-
-  return {
-    allowlistData,
-    allowlistLoading,
-    refetchAllowlist,
-    addAdmin,
-    removeAdmin,
   };
 }

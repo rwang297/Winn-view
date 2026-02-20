@@ -26,6 +26,4 @@ export function useAdminDashboard(user, isAdmin) {
       setLoading(false);
     }
   };
-
-  return { metrics, trends, loading };
 }

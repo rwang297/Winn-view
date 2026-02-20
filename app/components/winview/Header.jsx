@@ -1,7 +1,6 @@
 'use client';
 
 import useUser from '@/utils/useUser';
-import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

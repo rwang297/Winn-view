@@ -9,12 +9,10 @@ export default function AfterAuthRedirect() {
   useEffect(() => {
     let cancelled = false;
 
-    const run = async () => {
-      try {
-        const params = new URLSearchParams(
-          typeof window !== 'undefined' ? window.location.search : ''
-        );
-        const cb = params.get('callbackUrl');
+    // No backend integration - redirect to home
+    setTimeout(() => {
+      if (!cancelled) window.location.replace('/');
+    }, 1500);
 
         const me = await mockApi.getAdminAllowlist();
         const isAdmin = !!me?.isAdmin;

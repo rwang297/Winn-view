@@ -23,20 +23,13 @@ export function useIppisApplications(user, isAdmin, filters) {
     filters.sortDir,
   ]);
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['ippis-applications', queryString],
-    enabled: !!user && isAdmin,
-    queryFn: async () => {
-      const url = '/api/ippis-applications' + (queryString ? `?${queryString}` : '');
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error(`When fetching ${url}, the response was [${res.status}] ${res.statusText}`);
-      }
-      return res.json();
-    },
-  });
-
-  const applications = data?.applications || [];
+  // Return empty data - no backend integration
+  const data = { applications: [] };
+  const applications = [];
+  const isLoading = false;
+  const isError = false;
+  const error = null;
+  const refetch = () => {};
 
   return { applications, isLoading, isError, error, refetch };
 }
