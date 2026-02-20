@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function AfterAuthRedirect() {
   const [nonAdminBanner, setNonAdminBanner] = useState(false);
@@ -13,6 +14,25 @@ export default function AfterAuthRedirect() {
       if (!cancelled) window.location.replace('/');
     }, 1500);
 
+        const me = await mockApi.getAdminAllowlist();
+        const isAdmin = !!me?.isAdmin;
+
+        if (isAdmin) {
+          const target = cb && cb.startsWith('/admin') ? cb : '/admin/dashboard';
+          if (!cancelled) window.location.replace(target);
+        } else {
+          if (!cancelled) setNonAdminBanner(true);
+          setTimeout(() => {
+            if (!cancelled) window.location.replace('/');
+          }, 1500);
+        }
+      } catch (e) {
+        console.error('AfterAuth redirect failed', e);
+        if (!cancelled) window.location.replace('/');
+      }
+    };
+
+    run();
     return () => {
       cancelled = true;
     };

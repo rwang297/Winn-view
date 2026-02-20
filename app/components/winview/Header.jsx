@@ -3,6 +3,7 @@
 import useUser from '@/utils/useUser';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,8 +11,15 @@ export default function Header() {
   const [supportOpen, setSupportOpen] = useState(false);
 
   const { data: user } = useUser();
-  // No backend integration - admin feature disabled
-  const isAdmin = false;
+  const { data: me } = useQuery({
+    queryKey: ['header-admin-me'],
+    enabled: !!user,
+    queryFn: async () => {
+      return mockApi.getAdminAllowlist(user?.id);
+    },
+  });
+
+  const isAdmin = !!me?.isAdmin;
 
   const iosText =
     '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif';

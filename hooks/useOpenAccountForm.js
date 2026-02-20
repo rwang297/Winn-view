@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export function useOpenAccountForm(config = {}) {
   const initialStep = Number(config.initialStep || 1);
@@ -278,8 +279,8 @@ export function useOpenAccountForm(config = {}) {
           idCardType: formData.idCardType || null,
           accountNumber: formData.accountNumber || null,
         };
-        // Store in localStorage
-        localStorage.setItem('accountData', JSON.stringify(payload));
+
+        await mockApi.createAccount(payload);
         setIsSuccess(true);
         return;
       }
@@ -371,25 +372,53 @@ export function useOpenAccountForm(config = {}) {
         return;
       }
 
-      // Store all form data locally
-      const allData = {
-        account: {
-          fullName: derivedFullName,
-          email: derivedEmail,
-          phone: derivedPhone,
-          age: derivedAge,
-          gender: derivedGender,
-          occupation: derivedOccupation,
-          address: derivedAddress,
-          idCardType: formData.idCardType || null,
-          accountNumber: formData.accountNumber || null,
-        },
-        ippis: ippisForm,
-        sectionB: bForm,
-        sectionC: cForm,
-        sectionD: dForm,
+      const accountPayload = {
+        fullName: derivedFullName,
+        email: derivedEmail,
+        phone: derivedPhone,
+        age: derivedAge,
+        gender: derivedGender,
+        occupation: derivedOccupation,
+        address: derivedAddress,
+        // Include new fields if provided
+        idCardType: formData.idCardType || null,
+        accountNumber: formData.accountNumber || null,
       };
-      localStorage.setItem('applicationData', JSON.stringify(allData));
+
+      // 1) Create account
+      const accountJson = await mockApi.createAccount(accountPayload);
+
+      // 2) Save IPPIS application (wire to DB)
+      const ippisPayload = {
+        ...ippisForm,
+        // fallback personal email to main email if not provided
+        personalEmail: ippisForm.personalEmail || derivedEmail,
+        // link to created account
+        accountId: accountJson.accountId,
+      };
+      await mockApi.createIppisApplication(ippisPayload);
+
+      // 3) Save Section B (Account Opening)
+      const bPayload = {
+        ...bForm,
+        accountId: accountJson.accountId,
+      };
+      await mockApi.saveAccountOpeningB(bPayload);
+
+      // 4) Save Section C (Account Mandate & Docs & Terms)
+      const cPayload = {
+        ...cForm,
+        accountId: accountJson.accountId,
+      };
+      await mockApi.saveAccountMandateC(cPayload);
+
+      // 5) Save Section D (Reference Forms)
+      const dPayload = {
+        ...dForm,
+        accountId: accountJson.accountId,
+      };
+      await mockApi.saveReferenceFormsD(dPayload);
+
       setIsSuccess(true);
     } catch (error) {
       console.error(error);

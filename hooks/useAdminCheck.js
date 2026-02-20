@@ -1,7 +1,16 @@
-// No backend integration - return false for isAdmin
+import { useQuery } from '@tanstack/react-query';
+import mockApi from '@/utils/mockApi';
+
 export function useAdminCheck(user) {
-  return {
-    isAdmin: false,
-    meLoading: false
-  };
+  const { data: me, isLoading: meLoading } = useQuery({
+    queryKey: ['admin-me'],
+    enabled: !!user,
+    queryFn: async () => {
+      return mockApi.getAdminAllowlist(user?.id);
+    },
+  });
+
+  const isAdmin = !!me?.isAdmin;
+
+  return { isAdmin, meLoading };
 }

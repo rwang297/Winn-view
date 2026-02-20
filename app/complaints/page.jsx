@@ -4,6 +4,7 @@ import Footer from '@/components/winview/Footer';
 import Header from '@/components/winview/Header';
 import { Check, Phone } from 'lucide-react';
 import { useState } from 'react';
+import mockApi from '@/utils/mockApi';
 
 export default function ComplaintsPage() {
   const [formData, setFormData] = useState({
@@ -30,14 +31,7 @@ export default function ComplaintsPage() {
     setIsSubmitting(true);
 
     try {
-      // Store complaint locally (no backend integration)
-      const complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-      complaints.push({
-        ...formData,
-        timestamp: new Date().toISOString(),
-      });
-      localStorage.setItem('complaints', JSON.stringify(complaints));
-
+      await mockApi.createComplaint(formData);
       setIsSuccess(true);
       setFormData({
         name: '',
