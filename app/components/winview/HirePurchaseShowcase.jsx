@@ -12,11 +12,26 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 export default function HirePurchaseShowcase() {
   const [index, setIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const intervalRef = useRef(null);
   const touchStartXRef = useRef(0);
   const touchDeltaXRef = useRef(0);
+  const sectionRef = useRef(null);
 
   useEffect(() => setIsMounted(true), []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
 
   const slides = useMemo(
     () => [
@@ -53,13 +68,17 @@ export default function HirePurchaseShowcase() {
   };
 
   useEffect(() => {
+    if (!isVisible) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
     intervalRef.current = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
     }, 4500);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [slides.length]);
+  }, [isVisible, slides.length]);
 
   const iosFont = {
     fontFamily:
@@ -84,10 +103,10 @@ export default function HirePurchaseShowcase() {
   };
 
   return (
-    <section className="relative px-6 pt-20 pb-16 bg-[#FAF7F2]">
-      <div className="pointer-events-none absolute -top-24 -left-10 w-[520px] h-[520px] bg-gradient-to-br from-[#007AFF]/8 to-[#5AC8FA]/8 rounded-full blur-[110px] animate-breathe" />
+    <section ref={sectionRef} className="relative px-6 pt-20 pb-16 bg-[#FAF7F2]">
+      <div className="pointer-events-none absolute -top-24 -left-10 w-[520px] h-[520px] bg-gradient-to-br from-[#007AFF]/8 to-[#5AC8FA]/8 rounded-full blur-[80px] animate-breathe" />
       <div
-        className="pointer-events-none absolute -bottom-28 -right-16 w-[560px] h-[560px] bg-gradient-to-tl from-[#FFB86C]/8 to-[#FFD1A6]/8 rounded-full blur-[120px] animate-breathe"
+        className="pointer-events-none absolute -bottom-28 -right-16 w-[560px] h-[560px] bg-gradient-to-tl from-[#FFB86C]/8 to-[#FFD1A6]/8 rounded-full blur-[80px] animate-breathe"
         style={{ animationDelay: '1s' }}
       />
 

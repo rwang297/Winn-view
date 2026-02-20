@@ -13,16 +13,28 @@ export default function HeroSection() {
   const [hasAnimated, setHasAnimated] = useState(false);
   const balanceRef = useRef(null);
   const rafRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRafRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
+    return () => {
+      if (mouseRafRef.current) cancelAnimationFrame(mouseRafRef.current);
+      if (tiltRafRef.current) cancelAnimationFrame(tiltRafRef.current);
+    };
   }, []);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    setMousePosition({ x, y });
+    mouseRef.current.x = (e.clientX - rect.left) / rect.width;
+    mouseRef.current.y = (e.clientY - rect.top) / rect.height;
+
+    if (!mouseRafRef.current) {
+      mouseRafRef.current = requestAnimationFrame(() => {
+        setMousePosition({ x: mouseRef.current.x, y: mouseRef.current.y });
+        mouseRafRef.current = null;
+      });
+    }
   };
 
   // ADD: IntersectionObserver to trigger count-up once
@@ -61,13 +73,23 @@ export default function HeroSection() {
     };
   }, [hasAnimated]);
 
+  const tiltRef = useRef({ x: 0, y: 0 });
+  const tiltRafRef = useRef(null);
+
   const handlePhoneMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width; 
+    const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
     const rotateY = (x - 0.5) * 16;
-    const rotateX = -(y - 0.5) * 12; 
-    setTilt({ x: rotateY, y: rotateX });
+    const rotateX = -(y - 0.5) * 12;
+    tiltRef.current = { x: rotateY, y: rotateX };
+
+    if (!tiltRafRef.current) {
+      tiltRafRef.current = requestAnimationFrame(() => {
+        setTilt(tiltRef.current);
+        tiltRafRef.current = null;
+      });
+    }
   };
   const handlePhoneEnter = () => setIsTilting(true);
   const handlePhoneLeave = () => {
@@ -92,15 +114,12 @@ export default function HeroSection() {
       {/* Bright gradient background */}
       <div className="absolute inset-0 z-0 -top-20 lg:-top-28 bg-gradient-to-br from-blue-50 via-white to-cyan-50" />
 
-      {/* Background Image - Extended to cover header with water flow animation */}
+      {/* Background Image - Extended to cover header */}
       <div className="absolute inset-0 z-0 -top-20 lg:-top-28 overflow-hidden">
      <img
         src="https://raw.createusercontent.com/e4c7154d-a7bb-4f7a-9126-0a9ba6fa1e50/"
         alt="Abstract Background"
         className="w-full h-[calc(100%+5rem)] lg:h-[calc(100%+7rem)] object-cover opacity-[0.08] mix-blend-overlay transition-opacity duration-700 ease-out"
-        style={{
-          animation: 'waterFlow 12s ease-in-out infinite',
-        }}
         decoding="async"
         fetchPriority="high"
       />
@@ -111,21 +130,21 @@ export default function HeroSection() {
 
       {/* Dynamic Background Mesh - Bright and friendly */}
       <div
-        className="absolute top-[-40%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-br from-blue-300/20 to-cyan-300/15 rounded-full blur-[120px] mix-blend-screen will-change-transform"
+        className="absolute top-[-40%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-br from-blue-300/20 to-cyan-300/15 rounded-full blur-[80px] mix-blend-screen will-change-transform"
         style={{
           animation: 'float 8s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate',
           transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 10}px)`,
         }}
       />
       <div
-        className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-emerald-200/15 to-amber-200/12 rounded-full blur-[100px] will-change-transform"
+        className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-emerald-200/15 to-amber-200/12 rounded-full blur-[70px] will-change-transform"
         style={{
           animation: 'float 6s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate-reverse',
           transform: `translate(${mousePosition.x * -15}px, ${mousePosition.y * 15}px)`,
         }}
       />
       {/* Warm ambient glow */}
-      <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-gradient-to-br from-blue-200/12 to-purple-200/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-gradient-to-br from-blue-200/12 to-purple-200/10 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="w-full relative z-10 pt-12 lg:pt-16">
         <div className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center auto-rows-max`}>
@@ -366,13 +385,6 @@ export default function HeroSection() {
         }
         .animate-orbit { animation: orbit 4s ease-in-out infinite; }
         .animate-orbitSlow { animation: orbit 6s ease-in-out infinite; }
-        @keyframes waterFlow {
-          0% { transform: translateX(0) translateY(0) scale(1); filter: brightness(1) saturate(1) contrast(1); }
-          25% { transform: translateX(60px) translateY(-40px) scale(1.15); filter: brightness(1.3) saturate(1.4) contrast(1.1); }
-          50% { transform: translateX(0) translateY(-80px) scale(1.2); filter: brightness(1.4) saturate(1.5) contrast(1.2); }
-          75% { transform: translateX(-60px) translateY(-40px) scale(1.15); filter: brightness(1.3) saturate(1.4) contrast(1.1); }
-          100% { transform: translateX(0) translateY(0) scale(1); filter: brightness(1) saturate(1) contrast(1); }
-        }
       `}</style>
     </section>
   );
