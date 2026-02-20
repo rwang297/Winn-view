@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth w-full h-screen">
       <head>
         <script>{`
           (function() {
@@ -89,9 +89,9 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="antialiased bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
+      <body className="antialiased w-full min-h-screen bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
         <QueryProvider>
-          <div className="page-transition gpu-accelerated">{children}</div>
+          <div className="page-transition gpu-accelerated w-full">{children}</div>
           <StaticBackButton />
           <ScrollToTopButton />
         </QueryProvider>

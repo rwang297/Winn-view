@@ -86,7 +86,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative -mt-20 lg:-mt-28 pt-20 lg:pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-cyan-50"
+      className="relative w-full -mt-20 lg:-mt-28 pt-20 lg:pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-cyan-50"
       onMouseMove={handleMouseMove}
     >
       {/* Bright gradient background */}
