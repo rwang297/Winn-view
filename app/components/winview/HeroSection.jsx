@@ -61,13 +61,12 @@ export default function HeroSection() {
     };
   }, [hasAnimated]);
 
-  // ADD: Tilt handlers for the phone mock
   const handlePhoneMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width; // 0..1
-    const y = (e.clientY - rect.top) / rect.height; // 0..1
-    const rotateY = (x - 0.5) * 16; // degrees
-    const rotateX = -(y - 0.5) * 12; // degrees
+    const x = (e.clientX - rect.left) / rect.width; 
+    const y = (e.clientY - rect.top) / rect.height;
+    const rotateY = (x - 0.5) * 16;
+    const rotateX = -(y - 0.5) * 12; 
     setTilt({ x: rotateY, y: rotateX });
   };
   const handlePhoneEnter = () => setIsTilting(true);

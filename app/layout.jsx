@@ -12,7 +12,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        {/* Initialize theme early to avoid flashing wrong theme */}
         <script>{`
           (function() {
             try {

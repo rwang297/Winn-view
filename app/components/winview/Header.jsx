@@ -4,7 +4,6 @@ import useUser from '@/utils/useUser';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import mockApi from '@/utils/mockApi';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
