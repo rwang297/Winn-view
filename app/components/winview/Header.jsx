@@ -1,8 +1,10 @@
 'use client';
 
 import useUser from '@/utils/useUser';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,19 +26,11 @@ export default function Header() {
     '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif';
 
   useEffect(() => {
-    let rafId = null;
     const handleScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 10);
-        rafId = null;
-      });
+      setScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -49,7 +43,7 @@ export default function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'bg-white/10 backdrop-blur-sm'
+            ? 'bg-white/10 backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >

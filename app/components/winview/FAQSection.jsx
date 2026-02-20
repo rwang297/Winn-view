@@ -6,7 +6,6 @@ import { useState } from 'react';
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
-  // Custom gradient
   const winviewGradient = 'from-[#7b5aff] to-[#5ecbf7]';
 
   const faqs = [
@@ -39,77 +38,80 @@ export default function FAQSection() {
 
   return (
     <section className="py-32 px-6 bg-[#FAF7F2] relative overflow-hidden">
-      {/* Subtle Background Elements */}
+      {/* Background Blur */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#7b5aff]/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="w-full px-6 mx-auto relative z-10">
-        <div className="grid md:grid-cols-12 gap-12">
-          {/* Header Side */}
-          <div className="md:col-span-4">
-            <div className="sticky top-32">
-              <span
-                className={`bg-gradient-to-r ${winviewGradient} bg-clip-text text-transparent font-bold tracking-wider uppercase text-xs mb-4 block`}
-              >
-                Support
-              </span>
-              <h2 className="text-[48px] font-semibold text-[#1D1D1F] mb-6 leading-[1.05] tracking-tight">
-                Frequently <br />
-                Asked Questions
-              </h2>
-              <p className="text-[#86868b] mb-8 text-lg font-medium">
-                Can't find what you're looking for?
-              </p>
-              <a
-                href="/complaints"
-                className="group inline-flex items-center gap-2 text-[#7b5aff] font-medium hover:gap-3 transition-all"
-              >
-                <span className="border-b border-transparent group-hover:border-[#7b5aff]">
-                  Contact Support
-                </span>{' '}
-                <ArrowRight size={18} />
-              </a>
-            </div>
-          </div>
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Header Now On Top */}
+        <div className="text-center mb-12">
 
-          {/* FAQ List Side */}
-          <div className="md:col-span-8">
-            <div className="space-y-4">
-              {faqs.map((faq, index) => (
-                <div
-                  key={index}
-                  onClick={() => setOpenIndex(index === openIndex ? null : index)}
-                  className={`bg-white/80 backdrop-blur-md rounded-[24px] cursor-pointer transition-all duration-300 border border-transparent ${
-                    openIndex === index
-                      ? 'shadow-lg scale-[1.01] border-purple-100'
-                      : 'shadow-sm hover:shadow-md hover:border-white/50'
-                  }`}
-                >
-                  <div className="p-8">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3
-                        className={`text-xl font-semibold transition-colors duration-300 ${openIndex === index ? 'text-[#7b5aff]' : 'text-[#1D1D1F]'}`}
-                      >
-                        {faq.question}
-                      </h3>
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${openIndex === index ? `bg-gradient-to-r ${winviewGradient} text-white rotate-180` : 'bg-[#FAF7F2] text-[#1D1D1F]'}`}
-                      >
-                        {openIndex === index ? <Minus size={18} /> : <Plus size={18} />}
-                      </div>
-                    </div>
-                    <div
-                      className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                        openIndex === index ? 'max-h-40 opacity-100 mt-4' : 'max-h-0 opacity-0'
-                      }`}
-                    >
-                      <p className="text-[#86868b] text-[17px] leading-relaxed">{faq.answer}</p>
-                    </div>
+          <h2 className="text-[48px] font-semibold text-[#1D1D1F] mb-6 leading-[1.05] tracking-tight">
+            Frequently Asked Questions
+          </h2>
+
+          <p className="text-[#86868b] mb-8 text-lg font-medium">
+            Can't find what you're looking for?
+          </p>
+
+        </div>
+
+        {/* FAQ List */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              onClick={() => setOpenIndex(index === openIndex ? null : index)}
+              className={`bg-white/80 backdrop-blur-md rounded-[24px] cursor-pointer transition-all duration-300 border border-transparent ${
+                openIndex === index
+                  ? 'shadow-lg scale-[1.01] border-purple-100'
+                  : 'shadow-sm hover:shadow-md hover:border-white/50'
+              }`}
+            >
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-2">
+                  <h3
+                    className={`text-xl font-semibold transition-colors duration-300 ${
+                      openIndex === index ? 'text-[#7b5aff]' : 'text-[#1D1D1F]'
+                    }`}
+                  >
+                    {faq.question}
+                  </h3>
+
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      openIndex === index
+                        ? `bg-gradient-to-r ${winviewGradient} text-white rotate-180`
+                        : 'bg-[#FAF7F2] text-[#1D1D1F]'
+                    }`}
+                  >
+                    {openIndex === index ? <Minus size={18} /> : <Plus size={18} />}
                   </div>
                 </div>
-              ))}
+
+                <div
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    openIndex === index
+                      ? 'max-h-40 opacity-100 mt-4'
+                      : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <p className="text-[#86868b] text-[17px] leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+            <a
+          href="/complaints"
+          className="group flex items-center justify-center gap-2 text-[#7b5aff] font-medium hover:gap-3 transition-all mx-auto mt-6"
+        >
+          <span className="border-b border-transparent group-hover:border-[#7b5aff]">
+            Contact Support
+          </span>
+          <ArrowRight size={18} />
+        </a>
       </div>
     </section>
   );

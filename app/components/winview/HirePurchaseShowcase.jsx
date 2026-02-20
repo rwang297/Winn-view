@@ -160,22 +160,6 @@ export default function HirePurchaseShowcase() {
               </div>
             </div>
 
-            {/* Larger iOS-style controls */}
-            <button
-              aria-label="Previous"
-              onClick={() => go('prev')}
-              className="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 backdrop-blur border border-white/60 flex items-center justify-center shadow hover:bg-white"
-            >
-              <ChevronLeft size={20} className="text-[#1D1D1F]" />
-            </button>
-            <button
-              aria-label="Next"
-              onClick={() => go('next')}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 backdrop-blur border border-white/60 flex items-center justify-center shadow hover:bg-white"
-            >
-              <ChevronRight size={20} className="text-[#1D1D1F]" />
-            </button>
-
             {/* Larger dots */}
             <div className="mt-5 flex items-center justify-center gap-3">
               {slides.map((s, i) => {
