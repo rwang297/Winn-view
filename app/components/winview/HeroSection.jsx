@@ -2,6 +2,7 @@
 
 import { ArrowRight, ChevronRight, Lock, Play, ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -13,16 +14,28 @@ export default function HeroSection() {
   const [hasAnimated, setHasAnimated] = useState(false);
   const balanceRef = useRef(null);
   const rafRef = useRef(null);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRafRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
+    return () => {
+      if (mouseRafRef.current) cancelAnimationFrame(mouseRafRef.current);
+      if (tiltRafRef.current) cancelAnimationFrame(tiltRafRef.current);
+    };
   }, []);
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    setMousePosition({ x, y });
+    mouseRef.current.x = (e.clientX - rect.left) / rect.width;
+    mouseRef.current.y = (e.clientY - rect.top) / rect.height;
+
+    if (!mouseRafRef.current) {
+      mouseRafRef.current = requestAnimationFrame(() => {
+        setMousePosition({ x: mouseRef.current.x, y: mouseRef.current.y });
+        mouseRafRef.current = null;
+      });
+    }
   };
 
   // ADD: IntersectionObserver to trigger count-up once
@@ -61,13 +74,30 @@ export default function HeroSection() {
     };
   }, [hasAnimated]);
 
+  const tiltRef = useRef({ x: 0, y: 0 });
+  const tiltRafRef = useRef(null);
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const textRef = useRef(null);
+  const ctaRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useScrollAnimation(sectionRef);
+
   const handlePhoneMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width; 
+    const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
     const rotateY = (x - 0.5) * 16;
-    const rotateX = -(y - 0.5) * 12; 
-    setTilt({ x: rotateY, y: rotateX });
+    const rotateX = -(y - 0.5) * 12;
+    tiltRef.current = { x: rotateY, y: rotateX };
+
+    if (!tiltRafRef.current) {
+      tiltRafRef.current = requestAnimationFrame(() => {
+        setTilt(tiltRef.current);
+        tiltRafRef.current = null;
+      });
+    }
   };
   const handlePhoneEnter = () => setIsTilting(true);
   const handlePhoneLeave = () => {
@@ -86,21 +116,19 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative -mt-20 lg:-mt-28 pt-20 lg:pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-cyan-50"
+      ref={sectionRef}
+      className="relative w-full -mt-20 lg:-mt-28 pt-20 lg:pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-cyan-50"
       onMouseMove={handleMouseMove}
     >
       {/* Bright gradient background */}
       <div className="absolute inset-0 z-0 -top-20 lg:-top-28 bg-gradient-to-br from-blue-50 via-white to-cyan-50" />
 
-      {/* Background Image - Extended to cover header with water flow animation */}
+      {/* Background Image - Extended to cover header */}
       <div className="absolute inset-0 z-0 -top-20 lg:-top-28 overflow-hidden">
      <img
         src="https://raw.createusercontent.com/e4c7154d-a7bb-4f7a-9126-0a9ba6fa1e50/"
         alt="Abstract Background"
         className="w-full h-[calc(100%+5rem)] lg:h-[calc(100%+7rem)] object-cover opacity-[0.08] mix-blend-overlay transition-opacity duration-700 ease-out"
-        style={{
-          animation: 'waterFlow 12s ease-in-out infinite',
-        }}
         decoding="async"
         fetchPriority="high"
       />
@@ -111,21 +139,21 @@ export default function HeroSection() {
 
       {/* Dynamic Background Mesh - Bright and friendly */}
       <div
-        className="absolute top-[-40%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-br from-blue-300/20 to-cyan-300/15 rounded-full blur-[120px] mix-blend-screen will-change-transform"
+        className="absolute top-[-40%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-br from-blue-300/20 to-cyan-300/15 rounded-full blur-[80px] mix-blend-screen will-change-transform"
         style={{
           animation: 'float 8s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate',
           transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 10}px)`,
         }}
       />
       <div
-        className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-emerald-200/15 to-amber-200/12 rounded-full blur-[100px] will-change-transform"
+        className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-emerald-200/15 to-amber-200/12 rounded-full blur-[70px] will-change-transform"
         style={{
           animation: 'float 6s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate-reverse',
           transform: `translate(${mousePosition.x * -15}px, ${mousePosition.y * 15}px)`,
         }}
       />
       {/* Warm ambient glow */}
-      <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-gradient-to-br from-blue-200/12 to-purple-200/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-gradient-to-br from-blue-200/12 to-purple-200/10 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="w-full relative z-10 pt-12 lg:pt-16">
         <div className={`grid lg:grid-cols-2 gap-8 lg:gap-16 items-center auto-rows-max`}>
@@ -136,7 +164,8 @@ export default function HeroSection() {
 
             {/* Heading */}
             <h1
-              className="text-[56px] md:text-[72px] lg:text-[76px] font-bold leading-[1.1] tracking-tight text-gray-950 mb-6 lg:mb-8 mt-0"
+              ref={headingRef}
+              className="anim-heading text-[56px] md:text-[72px] lg:text-[76px] font-bold leading-[1.1] tracking-tight text-gray-950 mb-6 lg:mb-8 mt-0"
               style={{
                 fontFamily:
                   '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
@@ -152,7 +181,8 @@ export default function HeroSection() {
 
             {/* Supporting text */}
             <p
-              className="text-lg md:text-xl leading-relaxed text-gray-900 mb-10 lg:mb-12 max-w-[550px] mx-auto lg:mx-0 font-normal"
+              ref={textRef}
+              className="anim-text-left delay-100 text-lg md:text-xl leading-relaxed text-gray-900 mb-10 lg:mb-12 max-w-[550px] mx-auto lg:mx-0 font-normal"
               style={{
                 fontFamily:
                   '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
@@ -165,7 +195,8 @@ export default function HeroSection() {
 
             {/* CTAs */}
             <div
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 lg:gap-5"
+              ref={ctaRef}
+              className="anim-button delay-200 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 lg:gap-5"
               style={{
                 animation: 'fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both',
               }}
@@ -220,7 +251,8 @@ export default function HeroSection() {
 
           {/* Hero Image / Interaction */}
           <div
-            className={`relative transition-all duration-1000 delay-300 ease-out transform flex justify-center ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+            ref={imageRef}
+            className={`anim-image relative transition-all duration-1000 ease-out transform flex justify-center ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
           >
             <div
               className="relative z-10 rounded-[40px] overflow-hidden shadow-lg dark:shadow-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 transition-all duration-500 ease-out will-change-transform max-w-[420px] w-full"
@@ -366,13 +398,6 @@ export default function HeroSection() {
         }
         .animate-orbit { animation: orbit 4s ease-in-out infinite; }
         .animate-orbitSlow { animation: orbit 6s ease-in-out infinite; }
-        @keyframes waterFlow {
-          0% { transform: translateX(0) translateY(0) scale(1); filter: brightness(1) saturate(1) contrast(1); }
-          25% { transform: translateX(60px) translateY(-40px) scale(1.15); filter: brightness(1.3) saturate(1.4) contrast(1.1); }
-          50% { transform: translateX(0) translateY(-80px) scale(1.2); filter: brightness(1.4) saturate(1.5) contrast(1.2); }
-          75% { transform: translateX(-60px) translateY(-40px) scale(1.15); filter: brightness(1.3) saturate(1.4) contrast(1.1); }
-          100% { transform: translateX(0) translateY(0) scale(1); filter: brightness(1) saturate(1) contrast(1); }
-        }
       `}</style>
     </section>
   );

@@ -13,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react'; // added hooks for animations and observers
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
 export default function AppDownloadSection() {
   // --- Animation state (tilt + visibility + count up) ---
@@ -28,6 +29,9 @@ export default function AppDownloadSection() {
   // Transaction animation state
   const [activeTransaction, setActiveTransaction] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
+
+  // Scroll animations
+  useScrollAnimation(sectionRef);
 
   // currency formatter (₦)
   const formatter = useMemo(() => {
@@ -166,16 +170,16 @@ export default function AppDownloadSection() {
               <span className="text-[12px] opacity-80">Launching on iOS and Android</span>
             </div>
 
-            <h2 className="text-[48px] md:text-[64px] font-semibold text-blue-900 mb-6 tracking-tight leading-[1.1]">
+            <h2 className="anim-heading text-[48px] md:text-[64px] font-semibold text-blue-900 mb-6 tracking-tight leading-[1.1]">
               The bank in <br /> your pocket.
             </h2>
 
-            <p className="text-xl text-blue-700 mb-10 max-w-lg mx-auto lg:mx-0">
+            <p className="anim-text-left delay-100 text-xl text-blue-700 mb-10 max-w-lg mx-auto lg:mx-0">
               Our mobile app is in the final stretch. Be the first to experience seamless,
               secure banking on the go.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-12">
+            <div className="anim-button delay-200 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-12">
               
               <button
                 type="button"
@@ -206,7 +210,7 @@ export default function AppDownloadSection() {
               </button>
             </div>
 
-            <div className="flex items-center justify-center lg:justify-start gap-4 border-t border-blue-100 pt-8 text-blue-700 text-sm">
+            <div className="anim-fade delay-300 flex items-center justify-center lg:justify-start gap-4 border-t border-blue-100 pt-8 text-blue-700 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span>Final testing underway</span>
