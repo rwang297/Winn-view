@@ -2,6 +2,7 @@
 
 import { ArrowRight, ChevronRight, Lock, Play, ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import useScrollAnimation from '@/hooks/useScrollAnimation';
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -75,6 +76,13 @@ export default function HeroSection() {
 
   const tiltRef = useRef({ x: 0, y: 0 });
   const tiltRafRef = useRef(null);
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const textRef = useRef(null);
+  const ctaRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useScrollAnimation(sectionRef);
 
   const handlePhoneMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -108,6 +116,7 @@ export default function HeroSection() {
 
   return (
     <section
+      ref={sectionRef}
       className="relative w-full -mt-20 lg:-mt-28 pt-20 lg:pt-28 pb-20 px-6 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-cyan-50"
       onMouseMove={handleMouseMove}
     >
@@ -155,7 +164,8 @@ export default function HeroSection() {
 
             {/* Heading */}
             <h1
-              className="text-[56px] md:text-[72px] lg:text-[76px] font-bold leading-[1.1] tracking-tight text-gray-950 mb-6 lg:mb-8 mt-0"
+              ref={headingRef}
+              className="anim-heading text-[56px] md:text-[72px] lg:text-[76px] font-bold leading-[1.1] tracking-tight text-gray-950 mb-6 lg:mb-8 mt-0"
               style={{
                 fontFamily:
                   '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
@@ -171,7 +181,8 @@ export default function HeroSection() {
 
             {/* Supporting text */}
             <p
-              className="text-lg md:text-xl leading-relaxed text-gray-900 mb-10 lg:mb-12 max-w-[550px] mx-auto lg:mx-0 font-normal"
+              ref={textRef}
+              className="anim-text-left delay-100 text-lg md:text-xl leading-relaxed text-gray-900 mb-10 lg:mb-12 max-w-[550px] mx-auto lg:mx-0 font-normal"
               style={{
                 fontFamily:
                   '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif',
@@ -184,7 +195,8 @@ export default function HeroSection() {
 
             {/* CTAs */}
             <div
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 lg:gap-5"
+              ref={ctaRef}
+              className="anim-button delay-200 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 lg:gap-5"
               style={{
                 animation: 'fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both',
               }}
@@ -239,7 +251,8 @@ export default function HeroSection() {
 
           {/* Hero Image / Interaction */}
           <div
-            className={`relative transition-all duration-1000 delay-300 ease-out transform flex justify-center ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
+            ref={imageRef}
+            className={`anim-image relative transition-all duration-1000 ease-out transform flex justify-center ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
           >
             <div
               className="relative z-10 rounded-[40px] overflow-hidden shadow-lg dark:shadow-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 transition-all duration-500 ease-out will-change-transform max-w-[420px] w-full"
